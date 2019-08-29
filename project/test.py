@@ -1,5 +1,4 @@
 """ Dummy Python Test """
-import time
 import argparse
 
 
@@ -33,10 +32,7 @@ def main():
     args = parser.parse_args()
 
     print("ARGS:", args)
-    print("Waiting forever...")
-
-    while True:
-        time.sleep(100)
+    return
 
 
 if __name__ == "__main__":
