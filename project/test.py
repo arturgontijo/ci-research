@@ -1,4 +1,5 @@
 """ Dummy Python Test """
+import time
 import argparse
 
 
@@ -30,8 +31,14 @@ def main():
                         default="",
                         help="Path to cert key.")
     args = parser.parse_args()
+
     print("ARGS:", args)
+    print("Waiting forever...")
+
+    while True:
+        time.sleep(100)
 
 
 if __name__ == "__main__":
     main()
+    exit(0)

@@ -49,7 +49,7 @@ commands:
             echo CERTS_FOLDER         : ${CERTS_FOLDER}
             echo "======================================================================================================================"
             echo "Building new Image (if necessary)..."
-            CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./project/Dockerfile)
+            CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./Dockerfile)
             echo "CODE_HAS_CHANGED=${CODE_HAS_CHANGED}"
             if [ "$CODE_HAS_CHANGED" = 1 ]; then
               echo "Deploying..."
@@ -88,12 +88,17 @@ commands:
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
                   docker stop ${PROD_TAG}${DOCKER_CONTAINER_NAME} || true && docker rename ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true
+                  mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
+                  cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
                   docker run \
                   --name ${PROD_TAG}${DOCKER_CONTAINER_NAME} \
                   --restart unless-stopped \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${TEST_PROD_PORT}:${TEST_PROD_PORT}" || echo "-p ${TEST_DEV_PORT}:${TEST_DEV_PORT}") \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-v ~/${CERTS_FOLDER}:/opt/arturgontijo/.certs" || echo "") \
                   -dti ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME}
+                  docker cp /tmp/${CIRCLE_PROJECT_REPONAME} ${PROD_TAG}${DOCKER_CONTAINER_NAME}:/opt/${CIRCLE_PROJECT_USERNAME}/
+                  docker exec -i ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${START_COMMAND}
+                  rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}
             EOF
 
       - run:
@@ -134,7 +139,8 @@ jobs:
       TEST_HOST: "0.0.0.0"
       TEST_PROD_PORT: 7977
       TEST_DEV_PORT: 7976
-      TEST_COMMAND: bash -c "python3 test.py"
+      START_COMMAND: bash -c "./start_project.sh"
+      TEST_COMMAND: bash -c "ps -ax"
       CERTS_FOLDER: .certs
     steps:
       - checkout
