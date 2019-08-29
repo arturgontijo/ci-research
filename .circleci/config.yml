@@ -49,7 +49,6 @@ commands:
             echo CERTS_FOLDER         : ${CERTS_FOLDER}
             echo "====================================================================================================="
             echo "Status: Building new Image (if necessary)..."
-            cd ${CIRCLE_PROJECT_REPONAME}
             CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./project/Dockerfile)
             if [ "$CODE_HAS_CHANGED" = 1 ]; then
               mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
@@ -130,7 +129,7 @@ jobs:
   build-deploy-job:
     docker:
     - image: circleci/python:3.6.6-node
-    working_directory: ~/arturgontijo/
+    working_directory: ~/ci_research/
     environment:
       TEST_HOST: "0.0.0.0"
       TEST_PROD_PORT: 7077
@@ -142,8 +141,8 @@ jobs:
       - build_and_deploy:
           ssh_user_env_var: ${SSH_USER}
           ssh_host_env_var: ${SSH_HOST}
-          docker_image_name: lsi_charts
-          docker_container_name: LSI_CHARTS_IMAGE
+          docker_image_name: ci_research
+          docker_container_name: CI_RESEARCH
 
 workflows:
   version: 2.1
