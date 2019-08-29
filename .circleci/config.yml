@@ -132,8 +132,8 @@ jobs:
     working_directory: ~/ci_research/
     environment:
       TEST_HOST: "0.0.0.0"
-      TEST_PROD_PORT: 7077
-      TEST_DEV_PORT: 7076
+      TEST_PROD_PORT: 7977
+      TEST_DEV_PORT: 7976
       TEST_COMMAND: bash -c "python3 test.py"
       CERTS_FOLDER: .certs
     steps:
