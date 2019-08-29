@@ -130,7 +130,7 @@ jobs:
   build-deploy-job:
     docker:
     - image: circleci/python:3.6.6-node
-    working_directory: ~/
+    working_directory: ~/arturgontijo/
     environment:
       TEST_HOST: "0.0.0.0"
       TEST_PROD_PORT: 7077
