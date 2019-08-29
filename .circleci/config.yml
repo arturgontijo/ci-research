@@ -29,7 +29,7 @@ commands:
             EOF
       - run:
           name: Building
-          command: |
+          command: |-
             echo "===================================== Build/Deploy Configs =========================================="
             export SSH_USER=<< parameters.ssh_user_env_var >>
             export SSH_HOST=<< parameters.ssh_host_env_var >>
