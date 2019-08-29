@@ -52,7 +52,10 @@ commands:
             CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./project/Dockerfile)
             echo "CODE_HAS_CHANGED=${CODE_HAS_CHANGED}"
             if [ "$CODE_HAS_CHANGED" = 1 ]; then
-            	echo "Deploying..."
+              echo "Deploying..."
+              mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
+              cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
+              scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
             	ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
                     cd /tmp/${CIRCLE_PROJECT_REPONAME}
                     docker build \
