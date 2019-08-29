@@ -102,7 +102,7 @@ commands:
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-v ~/${CERTS_FOLDER}:/opt/arturgontijo/.certs" || echo "") \
                   -dti ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME}
                   docker cp /tmp/${CIRCLE_PROJECT_REPONAME} ${PROD_TAG}${DOCKER_CONTAINER_NAME}:/opt/${CIRCLE_PROJECT_USERNAME}/
-                  docker exec -ti ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${START_COMMAND}
+                  docker exec -i ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${START_COMMAND}
                   rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}
             EOF
 
@@ -131,7 +131,7 @@ commands:
             export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
-                  docker exec -ti ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${TEST_COMMAND}
+                  docker exec -i ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${TEST_COMMAND}
             EOF
 
 version: 2.1
