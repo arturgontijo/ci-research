@@ -4,12 +4,12 @@ ARG git_owner="arturgontijo"
 ARG git_repo="ci-research"
 ARG git_branch="master"
 
-ARG test_host="0.0.0.0"
-ARG test_port="7077"
-ARG test_user="admin"
-ARG test_pass="admin#PASS"
-ARG test_cert="cert.pem"
-ARG test_certkey="privkey.pem"
+ARG test_host
+ARG test_port
+ARG test_user
+ARG test_pass
+ARG test_cert
+ARG test_certkey
 
 ENV PROJECT_FOLDER=/opt/arturgontijo/${git_repo}
 
@@ -29,12 +29,12 @@ ADD . ${PROJECT_FOLDER}
 
 WORKDIR ${PROJECT_FOLDER}
 
-ENV TEST_HOST=${test_host}
-ENV TEST_PORT=${test_port}
-ENV TEST_USER=${test_user}
-ENV TEST_PASS=${test_pass}
-ENV TEST_CERT=${test_cert}
-ENV TEST_CERTKEY=${test_certkey}
+ENV TEST_HOST=${test_host:-"0.0.0.0"}
+ENV TEST_PORT=${test_port:-"7077"}
+ENV TEST_USER=${test_user:-"admin"}
+ENV TEST_PASS=${test_pass:-"admin#PASS"}
+ENV TEST_CERT=${test_cert:-"cert.pem"}
+ENV TEST_CERTKEY=${test_certkey:-"privkey.pem"}
 
 CMD python3 \
     test.py \
