@@ -76,7 +76,7 @@ commands:
                     --build-arg test_certkey=${TEST_CERTKEY} \
                     $([ "${DOCKER_NOCACHE}" = "true" ] && echo "--no-cache" || echo "") \
                     -t ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME} .
-                    rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}
+                    rm -rf /tmp/${CIRCLE_PROJECT_REPONAME} || true
             	EOF
             else
             	echo "Not Building..."
@@ -102,8 +102,8 @@ commands:
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-v ~/${CERTS_FOLDER}:/opt/arturgontijo/.certs" || echo "") \
                   -dti ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME}
                   docker cp /tmp/${CIRCLE_PROJECT_REPONAME} ${PROD_TAG}${DOCKER_CONTAINER_NAME}:/opt/${CIRCLE_PROJECT_USERNAME}/
-                  docker exec -i ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${START_COMMAND}
-                  rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}
+                  docker exec -d ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${START_COMMAND}
+                  rm -rf /tmp/${CIRCLE_PROJECT_REPONAME} || true
             EOF
 
       - run:
@@ -144,7 +144,7 @@ jobs:
       TEST_HOST: "0.0.0.0"
       TEST_PROD_PORT: 7977
       TEST_DEV_PORT: 7976
-      START_COMMAND: bash -c "./start_project.sh &"
+      START_COMMAND: bash -c "./start_project.sh"
       TEST_COMMAND: bash -c "ps -ax"
       CERTS_FOLDER: .certs
     steps:
