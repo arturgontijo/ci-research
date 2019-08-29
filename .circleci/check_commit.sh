@@ -23,6 +23,6 @@ elif [ "$TARGET_FILE_COMMIT" = "" ]
     # "${TARGET_FILE} not commited yet!"
     echo 0
 else
-    echo "${TARGET_FILE} has changed."
+    # "${TARGET_FILE} has changed."
     echo 1
 fi
