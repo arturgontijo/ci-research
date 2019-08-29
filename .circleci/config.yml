@@ -23,7 +23,7 @@ commands:
             export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             export PROD_TAG=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "PROD_" || echo "")
-            echo "Status: Removing old Container (from previous builds)..."
+            echo "Removing old Container (from previous builds)..."
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
               docker stop ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true && docker rm ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true
             EOF
@@ -48,10 +48,11 @@ commands:
             echo DOCKER_CONTAINER_NAME: ${DOCKER_CONTAINER_NAME}
             echo CERTS_FOLDER         : ${CERTS_FOLDER}
             echo "======================================================================================================================"
-            echo "Status: Building new Image (if necessary)..."
+            echo "Building new Image (if necessary)..."
             CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./project/Dockerfile)
+            echo "CODE_HAS_CHANGED=${CODE_HAS_CHANGED}"
             if [ "$CODE_HAS_CHANGED" = 1 ]; then
-            	echo "Status: Deploying..."
+            	echo "Deploying..."
             	ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
                     cd /tmp/${CIRCLE_PROJECT_REPONAME}
                     docker build \
@@ -69,7 +70,7 @@ commands:
                     rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}
             	EOF
             else
-            	echo "Status: Not Building..."
+            	echo "Not Building..."
             fi
       
       - run:
@@ -79,7 +80,7 @@ commands:
             export SSH_HOST=<< parameters.ssh_host_env_var >>
             export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
-            echo "Status: Running new Container..."
+            echo "Running new Container..."
             export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
@@ -99,7 +100,7 @@ commands:
             export SSH_HOST=<< parameters.ssh_host_env_var >>
             export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
-            echo "Status: Removing old Container..."
+            echo "Removing old Container..."
             export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
@@ -113,7 +114,7 @@ commands:
             export SSH_HOST=<< parameters.ssh_host_env_var >>
             export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
-            echo "Status: Testing..."
+            echo "Testing..."
             export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
