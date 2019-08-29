@@ -84,13 +84,14 @@ commands:
             export SSH_HOST=<< parameters.ssh_host_env_var >>
             export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
-            echo "Running new Container..."
             export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
+            echo "Running new Container..."
+            mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
+            cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
+            scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
                   docker stop ${PROD_TAG}${DOCKER_CONTAINER_NAME} || true && docker rename ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true
-                  mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
-                  cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
                   docker run \
                   --name ${PROD_TAG}${DOCKER_CONTAINER_NAME} \
                   --restart unless-stopped \
