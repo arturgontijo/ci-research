@@ -29,7 +29,7 @@ commands:
             EOF
       - run:
           name: Building
-          command: |-
+          command: |
             echo "===================================== Build/Deploy Configs =========================================="
             export SSH_USER=<< parameters.ssh_user_env_var >>
             export SSH_HOST=<< parameters.ssh_host_env_var >>
@@ -47,16 +47,13 @@ commands:
             echo DOCKER_IMAGE_NAME    : ${DOCKER_IMAGE_NAME}
             echo DOCKER_CONTAINER_NAME: ${DOCKER_CONTAINER_NAME}
             echo CERTS_FOLDER         : ${CERTS_FOLDER}
-            echo "====================================================================================================="
+            echo "======================================================================================================================"
             echo "Status: Building new Image (if necessary)..."
             CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./project/Dockerfile)
             if [ "$CODE_HAS_CHANGED" = 1 ]; then
-              mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
-              cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
-              scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
-              ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
+            	echo "Status: Deploying..."
+            	ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
                     cd /tmp/${CIRCLE_PROJECT_REPONAME}
-
                     docker build \
                     --build-arg git_owner=${CIRCLE_PROJECT_USERNAME} \
                     --build-arg git_repo=${CIRCLE_PROJECT_REPONAME} \
@@ -69,9 +66,8 @@ commands:
                     --build-arg test_certkey=${TEST_CERTKEY} \
                     $([ "${DOCKER_NOCACHE}" = "true" ] && echo "--no-cache" || echo "") \
                     -t ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME} .
-
                     rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}
-              EOF
+            	EOF
             else
             	echo "Status: Not Building..."
             fi
