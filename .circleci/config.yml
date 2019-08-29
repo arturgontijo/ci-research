@@ -1,0 +1,152 @@
+commands:
+  build_and_deploy:
+    description: "Build and Deploy"
+    parameters:
+      ssh_user_env_var:
+        type: string
+        default: ""
+      ssh_host_env_var:
+        type: string
+        default: ""
+      docker_image_name:
+        type: string
+        default: ""
+      docker_container_name:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Removing old Docker Container (Previous Builds)
+          command: |
+            export SSH_USER=<< parameters.ssh_user_env_var >>
+            export SSH_HOST=<< parameters.ssh_host_env_var >>
+            export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
+            export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
+            export PROD_TAG=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "PROD_" || echo "")
+            echo "Status: Removing old Container (from previous builds)..."
+            ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
+              docker stop ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true && docker rm ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true
+            EOF
+      - run:
+          name: Building
+          command: |
+            echo "===================================== Build/Deploy Configs =========================================="
+            export SSH_USER=<< parameters.ssh_user_env_var >>
+            export SSH_HOST=<< parameters.ssh_host_env_var >>
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
+            export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
+            export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
+            export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
+            echo            git_user  : ${CIRCLE_PROJECT_USERNAME}
+            echo            git_repo  : ${CIRCLE_PROJECT_REPONAME}
+            echo            git_branch: ${CIRCLE_BRANCH}
+            echo SSH_USER             : ${SSH_USER}
+            echo SSH_HOST             : ${SSH_HOST}
+            echo DOCKER_DEPLOY        : ${DOCKER_DEPLOY}
+            echo DOCKER_NOCACHE       : ${DOCKER_NOCACHE}
+            echo DOCKER_IMAGE_NAME    : ${DOCKER_IMAGE_NAME}
+            echo DOCKER_CONTAINER_NAME: ${DOCKER_CONTAINER_NAME}
+            echo CERTS_FOLDER         : ${CERTS_FOLDER}
+            echo "====================================================================================================="
+            echo "Status: Building new Image (if necessary)..."
+            cd ${CIRCLE_PROJECT_REPONAME}
+            CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./project/Dockerfile)
+            if [ "$CODE_HAS_CHANGED" = 1 ]; then
+              mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
+              cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
+              scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
+              ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
+                    cd /tmp/${CIRCLE_PROJECT_REPONAME}
+
+                    docker build \
+                    --build-arg git_owner=${CIRCLE_PROJECT_USERNAME} \
+                    --build-arg git_repo=${CIRCLE_PROJECT_REPONAME} \
+                    --build-arg git_branch=${CIRCLE_BRANCH} \
+                    --build-arg test_host=${TEST_HOST} \
+                    $([ "${DOCKER_DEPLOY}" = "true" ] && echo "--build-arg test_port=${TEST_PROD_PORT}" || echo "--build-arg test_port=${TEST_DEV_PORT}") \
+                    --build-arg test_user=${TEST_USER} \
+                    --build-arg test_pass=${TEST_PASS} \
+                    --build-arg test_cert=${TEST_CERT} \
+                    --build-arg test_certkey=${TEST_CERTKEY} \
+                    $([ "${DOCKER_NOCACHE}" = "true" ] && echo "--no-cache" || echo "") \
+                    -t ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME} .
+
+                    rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}
+              EOF
+            else
+            	echo "Status: Not Building..."
+            fi
+      
+      - run:
+          name: Running new Docker Container
+          command: |
+            export SSH_USER=<< parameters.ssh_user_env_var >>
+            export SSH_HOST=<< parameters.ssh_host_env_var >>
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
+            export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
+            echo "Status: Running new Container..."
+            export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
+            export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
+            ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
+                  docker stop ${PROD_TAG}${DOCKER_CONTAINER_NAME} || true && docker rename ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true
+                  docker run \
+                  --name ${PROD_TAG}${DOCKER_CONTAINER_NAME} \
+                  --restart unless-stopped \
+                  $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${TEST_PROD_PORT}:${TEST_PROD_PORT}" || echo "-p ${TEST_DEV_PORT}:${TEST_DEV_PORT}") \
+                  $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-v ~/${CERTS_FOLDER}:/opt/arturgontijo/.certs" || echo "") \
+                  -dti ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME}
+            EOF
+
+      - run:
+          name: Removing old Docker Container
+          command: |
+            export SSH_USER=<< parameters.ssh_user_env_var >>
+            export SSH_HOST=<< parameters.ssh_host_env_var >>
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
+            export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
+            echo "Status: Removing old Container..."
+            export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
+            export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
+            ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
+                  docker stop ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true && docker rm ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true
+            EOF
+
+      - run:
+          name: Testing
+          command: |
+            export SSH_USER=<< parameters.ssh_user_env_var >>
+            export SSH_HOST=<< parameters.ssh_host_env_var >>
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "true" || echo "false")
+            export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
+            echo "Status: Testing..."
+            export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
+            export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
+            ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
+                  docker exec -i ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${TEST_COMMAND}
+            EOF
+
+version: 2.1
+jobs:
+  build-deploy-job:
+    docker:
+    - image: circleci/python:3.6.6-node
+    working_directory: ~/
+    environment:
+      TEST_HOST: "0.0.0.0"
+      TEST_PROD_PORT: 7077
+      TEST_DEV_PORT: 7076
+      TEST_COMMAND: bash -c "python3 test.py"
+      CERTS_FOLDER: .certs
+    steps:
+      - checkout
+      - build_and_deploy:
+          ssh_user_env_var: ${SSH_USER}
+          ssh_host_env_var: ${SSH_HOST}
+          docker_image_name: lsi_charts
+          docker_container_name: LSI_CHARTS_IMAGE
+
+workflows:
+  version: 2.1
+  build_deploy:
+    jobs:
+      - build-deploy-job
