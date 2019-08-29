@@ -16,13 +16,13 @@ TARGET_FILE_COMMIT=$(git log -1 --format=format:%H --full-diff ${TARGET_FILE})
 
 if [ "$TARGET_FILE_COMMIT" = "$LATEST_COMMIT" ]
     then
-    # "${TARGET_FILE} has not changed!"
-    echo 0
+    # "${TARGET_FILE} has changed!"
+    echo 1
 elif [ "$TARGET_FILE_COMMIT" = "" ]
     then
     # "${TARGET_FILE} not commited yet!"
     echo 0
 else
-    # "${TARGET_FILE} has changed."
-    echo 1
+    # "${TARGET_FILE} has not changed."
+    echo 0
 fi

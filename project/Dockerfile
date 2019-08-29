@@ -21,8 +21,7 @@ RUN apt-get update && \
     python3-pip \
     python3-dev \
     git \
-    wget \
-    nano
+    wget
 
 ADD . ${PROJECT_FOLDER}
 
