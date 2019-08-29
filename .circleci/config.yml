@@ -16,6 +16,14 @@ commands:
         default: ""
     steps:
       - run:
+          name: Setting Files Up
+          command: |
+            echo "Setting Up..."
+            rm -rf /tmp/${CIRCLE_PROJECT_REPONAME} || true
+            mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
+            cp Dockerfile /tmp/${CIRCLE_PROJECT_REPONAME}
+            cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
+      - run:
           name: Removing old Docker Container (Previous Builds)
           command: |
             export SSH_USER=<< parameters.ssh_user_env_var >>
@@ -53,9 +61,6 @@ commands:
             echo "CODE_HAS_CHANGED=${CODE_HAS_CHANGED}"
             if [ "$CODE_HAS_CHANGED" = 1 ]; then
               echo "Deploying..."
-              mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
-              cp Dockerfile /tmp/${CIRCLE_PROJECT_REPONAME}
-              cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
               scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
             	ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
                     cd /tmp/${CIRCLE_PROJECT_REPONAME}
@@ -87,8 +92,6 @@ commands:
             export DOCKER_IMAGE_NAME=<< parameters.docker_image_name >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             echo "Running new Container..."
-            mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
-            cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
             scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
                   docker stop ${PROD_TAG}${DOCKER_CONTAINER_NAME} || true && docker rename ${PROD_TAG}${DOCKER_CONTAINER_NAME} ${PROD_TAG}${DOCKER_CONTAINER_NAME}_old || true

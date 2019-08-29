@@ -29,7 +29,6 @@ RUN apt-get update && \
     python3-dev \
     git \
     wget \
-    nano \
-    curl
+    nano
 
 WORKDIR ${PROJECT_FOLDER}
