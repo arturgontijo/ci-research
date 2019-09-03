@@ -32,4 +32,9 @@ RUN apt-get update && \
     nano \
     curl
 
+ADD . ${PROJECT_FOLDER}
+
+RUN cd ${PROJECT_FOLDER} && \
+    pip3 install -r requirements.txt
+
 WORKDIR ${PROJECT_FOLDER}

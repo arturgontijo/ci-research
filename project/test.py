@@ -1,4 +1,5 @@
 """ Dummy Python Test """
+import os
 import time
 import argparse
 
@@ -8,27 +9,27 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--host",
                         type=str,
-                        default="localhost",
+                        default=os.environ.get("TEST_HOST", "localhost"),
                         help="Test server host.")
     parser.add_argument("--port",
                         type=int,
-                        default=7077,
+                        default=os.environ.get("TEST_PORT", 7077),
                         help="Test server port.")
     parser.add_argument("--username",
                         type=str,
-                        default="admin",
+                        default=os.environ.get("TEST_USER", "admin"),
                         help="Test server username.")
     parser.add_argument("--password",
                         type=str,
-                        default="admin#SNET",
+                        default=os.environ.get("TEST_PASS", "admin#PASS"),
                         help="Test server password.")
     parser.add_argument("--cert",
                         type=str,
-                        default="",
+                        default=os.environ.get("TEST_CERT", ""),
                         help="Path to certfile.")
     parser.add_argument("--certkey",
                         type=str,
-                        default="",
+                        default=os.environ.get("TEST_CERTKEY", ""),
                         help="Path to cert key.")
     args = parser.parse_args()
     print("ARGS:", args)

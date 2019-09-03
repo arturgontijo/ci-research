@@ -22,6 +22,7 @@ commands:
             rm -rf /tmp/${CIRCLE_PROJECT_REPONAME} || true
             mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
             cp Dockerfile /tmp/${CIRCLE_PROJECT_REPONAME}
+            cp requirements.txt /tmp/${CIRCLE_PROJECT_REPONAME}
             cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
       - run:
           name: Removing old Docker Container (Previous Builds)
@@ -57,9 +58,11 @@ commands:
             echo CERTS_FOLDER         : ${CERTS_FOLDER}
             echo "======================================================================================================================"
             echo "Building new Image (if necessary)..."
-            CODE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./Dockerfile)
-            echo "CODE_HAS_CHANGED=${CODE_HAS_CHANGED}"
-            if [ "$CODE_HAS_CHANGED" = 1 ]; then
+            DOCKERFILE_HAS_CHANGED=$(sh .circleci/check_commit.sh ./Dockerfile)
+            REQUIREMENTS_HAS_CHANGED=$(sh .circleci/check_commit.sh ./requirements.txt)
+            echo "DOCKERFILE_HAS_CHANGED=${DOCKERFILE_HAS_CHANGED}"
+            echo "REQUIREMENTS_HAS_CHANGED=${REQUIREMENTS_HAS_CHANGED}"
+            if [ "$DOCKERFILE_HAS_CHANGED" = 1 ] || [ "$REQUIREMENTS_HAS_CHANGED" = 1 ] ; then
               echo "Deploying..."
               scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
             	ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
@@ -144,7 +147,7 @@ jobs:
       TEST_HOST: "0.0.0.0"
       TEST_PROD_PORT: 7977
       TEST_DEV_PORT: 7976
-      START_COMMAND: bash -c "./start_project.sh"
+      START_COMMAND: bash -c "python3 test.py"
       TEST_COMMAND: bash -c "ps -ax"
       CERTS_FOLDER: .certs
     steps:
