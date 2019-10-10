@@ -33,14 +33,11 @@ commands:
             export DOCKER_CONTAINER_NAME=<< parameters.docker_container_name >>
             export PROD_TAG=$([ "${CIRCLE_PROJECT_USERNAME}" = "arturgontijo" ] && echo "PROD_" || echo "")
             echo "Setting Up..."
-            echo $(.circleci/check_md5.sh Dockerfile) >> docker_rebuild
-            echo "FILES_CHANGED=$(cat docker_rebuild)"
+            echo $(.circleci/check_md5.sh ./project/Dockerfile) >> ./project/docker_rebuild
+            echo "FILES_CHANGED=$(cat ./project/docker_rebuild)"
             rm -rf /tmp/${CIRCLE_PROJECT_REPONAME} || true
             mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
-            cp -r . /tmp/${CIRCLE_PROJECT_REPONAME}
-            rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}/.git/ || true
-            rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}/.circleci/ || true
-            rm -rf /tmp/${CIRCLE_PROJECT_REPONAME}/test/ || true
+            cp -r ./project/* /tmp/${CIRCLE_PROJECT_REPONAME}
             scp -o "StrictHostKeyChecking no" -r /tmp/${CIRCLE_PROJECT_REPONAME} ${SSH_USER}@${SSH_HOST}:/tmp/
       - run:
           name: Removing old Docker Container (Previous Builds)
@@ -191,14 +188,14 @@ jobs:
     working_directory: ~/ci-research
     environment:
       TEST_HOST: "0.0.0.0"
-      TEST_PROD_PORT: 7777
+      TEST_PORT: 7777
       TEST_DEV_PORT: 7776
       TEST_USER: "arturgontijo"
       TEST_PASS: "123456"
       TEST_STORAGE: "storage"
       TEST_CERT: "cert.pem"
       TEST_CERTKEY: "privkey.pem"
-      START_COMMAND: bash -c "pip3 install -r requirements.txt;python3 test.py"
+      START_COMMAND: bash -c "pip3 install -r requirements.txt;python3 run.py"
       TEST_COMMAND: bash -c "ps -ax"
       CERTS_FOLDER: .certs
     steps:
