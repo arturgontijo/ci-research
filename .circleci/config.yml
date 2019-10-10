@@ -92,11 +92,11 @@ commands:
                 --build-arg git_branch=${CIRCLE_BRANCH} \
                 --build-arg test_host=${TEST_HOST} \
                 $([ "${DOCKER_DEPLOY}" = "true" ] && echo "--build-arg test_port=${TEST_PORT}" || echo "--build-arg test_port=${TEST_DEV_PORT}") \
-                --build-arg test_user=${WEBAPP_USER} \
-                --build-arg test_pass=${WEBAPP_PASS} \
-                --build-arg test_storage=${WEBAPP_STORAGE} \
-                --build-arg test_cert=${WEBAPP_CERT} \
-                --build-arg test_certkey=${WEBAPP_CERTKEY} \
+                --build-arg test_user=${TEST_USER} \
+                --build-arg test_pass=${TEST_PASS} \
+                --build-arg test_storage=${TEST_STORAGE} \
+                --build-arg test_cert=${TEST_CERT} \
+                --build-arg test_certkey=${TEST_CERTKEY} \
                 $([ "${DOCKER_NOCACHE}" = "true" ] && echo "--no-cache" || echo "") \
                 -t ${DOCKER_IMAGE_NAME}:${CIRCLE_PROJECT_USERNAME} .
               else
@@ -141,11 +141,11 @@ commands:
                   --restart unless-stopped \
                   -e test_host=${TEST_HOST} \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-e TEST_PORT=${TEST_PORT}" || echo "-e TEST_PORT=${TEST_DEV_PORT}") \
-                  -e WEBAPP_USER=${WEBAPP_USER} \
-                  -e WEBAPP_PASS=${WEBAPP_PASS} \
-                  -e WEBAPP_STORAGE=${WEBAPP_STORAGE} \
-                  -e WEBAPP_CERT=${WEBAPP_CERT} \
-                  -e WEBAPP_CERTKEY=${WEBAPP_CERTKEY} \
+                  -e TEST_USER=${TEST_USER} \
+                  -e TEST_PASS=${TEST_PASS} \
+                  -e TEST_STORAGE=${TEST_STORAGE} \
+                  -e TEST_CERT=${TEST_CERT} \
+                  -e TEST_CERTKEY=${TEST_CERTKEY} \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${TEST_PORT}:${TEST_PORT}" || echo "-p ${TEST_DEV_PORT}:${TEST_DEV_PORT}") \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-v /home/${SSH_USER}/${CERTS_FOLDER}:/opt/${CIRCLE_PROJECT_USERNAME}/.certs" || echo "") \
                   $([ "${DOCKER_MOUNT_VOLUMES}" = "true" ] && echo "-v /home/${SSH_USER}/${DOCKER_MOUNT_SRC}:${DOCKER_MOUNT_DEST}" || echo "") \
@@ -193,6 +193,11 @@ jobs:
       TEST_HOST: "0.0.0.0"
       TEST_PROD_PORT: 7777
       TEST_DEV_PORT: 7776
+      TEST_USER: "arturgontijo"
+      TEST_PASS: "123456"
+      TEST_STORAGE: "storage"
+      TEST_CERT: "cert.pem"
+      TEST_CERTKEY: "privkey.pem"
       START_COMMAND: bash -c "pip3 install -r requirements.txt;python3 test.py"
       TEST_COMMAND: bash -c "ps -ax"
       CERTS_FOLDER: .certs

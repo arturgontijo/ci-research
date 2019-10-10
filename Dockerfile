@@ -8,6 +8,7 @@ ARG test_host
 ARG test_port
 ARG test_user
 ARG test_pass
+ARG test_storage
 ARG test_cert
 ARG test_certkey
 
@@ -15,6 +16,7 @@ ENV TEST_HOST=${test_host:-"0.0.0.0"}
 ENV TEST_PORT=${test_port:-"7777"}
 ENV TEST_USER=${test_user:-"admin"}
 ENV TEST_PASS=${test_pass:-"admin#PASS"}
+ENV TEST_STORAGE=${test_storage:-"storage"}
 ENV TEST_CERT=${test_cert:-"cert.pem"}
 ENV TEST_CERTKEY=${test_certkey:-"privkey.pem"}
 
