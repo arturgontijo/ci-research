@@ -1,4 +1,4 @@
-""" Dummy Python Test """
+""" Dummy Python Script """
 import os
 import time
 import argparse
@@ -13,7 +13,7 @@ def main():
                         help="Test server host.")
     parser.add_argument("--port",
                         type=int,
-                        default=os.environ.get("TEST_PORT", 7077),
+                        default=os.environ.get("TEST_PORT", 7777),
                         help="Test server port.")
     parser.add_argument("--username",
                         type=str,

@@ -12,7 +12,7 @@ ARG test_cert
 ARG test_certkey
 
 ENV TEST_HOST=${test_host:-"0.0.0.0"}
-ENV TEST_PORT=${test_port:-"7077"}
+ENV TEST_PORT=${test_port:-"7777"}
 ENV TEST_USER=${test_user:-"admin"}
 ENV TEST_PASS=${test_pass:-"admin#PASS"}
 ENV TEST_CERT=${test_cert:-"cert.pem"}
