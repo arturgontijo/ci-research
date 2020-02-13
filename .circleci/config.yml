@@ -7,12 +7,5 @@ workflows:
     - ssh-deployment/deploy:
         ssh-host: ${SSH_HOST}
         ssh-user: ${SSH_USER}
-        docker-image: ""
-        docker-container: ""
-        docker-nvidia: false
-        docker-volume: ""
-        docker-vol-src: ""
-        docker-vol-dst: ""
-        extras: ""
 
 version: 2.1

@@ -82,9 +82,11 @@ jobs:
       docker-image:
         description: The name of the Docker images that will be built.
         type: string
+        default: ""
       docker-container:
         description: The name of the Docker container that will be started.
         type: string
+        default: ""
       docker-nvidia:
         description: Starts the container with "--runtime=nvidia".
         type: boolean
@@ -96,13 +98,15 @@ jobs:
       docker-vol-src:
         description: Source directory outside the container.
         type: string
+        default: ""
       docker-vol-dst:
         description: Destination directory inside the container.
         type: string
-      extras:
         default: ""
+      extras:
         description: Extra arguments.
         type: string
+        default: ""
     steps:
     - checkout
     - ssh-deployment:
