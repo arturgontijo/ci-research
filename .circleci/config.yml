@@ -7,6 +7,8 @@ workflows:
     - ssh-deployment/deploy:
         ssh-host: ${SSH_HOST}
         ssh-user: ${SSH_USER}
+        git-repo: "dnn-model-services"
+        git-branch: "master"
         service-name: "i3d-video-action-recognition"
         service-dir: "i3d-video-action-recognition"
         mainnet-port: "7005"
