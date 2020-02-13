@@ -11,10 +11,6 @@ commands:
         type: string
       git-branch:
         type: string
-      service-name:
-        type: string
-      service-dir:
-        type: string
       mainnet-port:
         type: string
       testnet-port:
@@ -234,12 +230,6 @@ jobs:
         description: The Github branch name.
         type: string
         default: ${CIRCLE_BRANCH}
-      service-name:
-        description: The service name.
-        type: string
-      service-dir:
-        description: The service directory.
-        type: string
       mainnet-port:
         description: The service post (Mainnet).
         type: string
@@ -297,8 +287,6 @@ jobs:
         ssh-host: << parameters.ssh-host >>
         git-repo: << parameters.git-repo >>
         git-branch: << parameters.git-branch >>
-        service-name: << parameters.service-name >>
-        service-dir: << parameters.service-dir >>
         mainnet-port: << parameters.mainnet-port >>
         testnet-port: << parameters.testnet-port >>
         run-command: << parameters.run-command >>
