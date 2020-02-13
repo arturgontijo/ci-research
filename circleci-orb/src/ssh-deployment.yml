@@ -135,8 +135,8 @@ commands:
             export DOCKER_NVIDIA=<< parameters.docker-nvidia >>
             export DOCKER_IMAGE=<< parameters.docker-image >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export MAINNET_PORT= << parameters.mainnet-port >>
-            export TESTNET_PORT= << parameters.testnet-port >>
+            export MAINNET_PORT=<< parameters.mainnet-port >>
+            export TESTNET_PORT=<< parameters.testnet-port >>
             export DOCKER_VOLUME=<< parameters.docker-volume >>
             export DOCKER_VOLUME_SRC=<< parameters.docker-vol-src >>
             export DOCKER_VOLUME_DST=<< parameters.docker-vol-dst >>
