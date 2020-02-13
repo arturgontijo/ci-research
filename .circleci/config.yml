@@ -21,7 +21,7 @@ workflows:
         docker-container: "MY_I3D_CONTAINER"
         docker-nvidia: true
         docker-volume: true
-        docker-vol-src: "~/singnet/.certs"
+        docker-vol-src: "singnet/.certs"
         docker-vol-dst: "/opt/singnet/.certs"
         infura-api-key: ${INFURA_API_KEY}
         daemon-pk: ${PK_I3D_VIDEO_ACTION_RECON}

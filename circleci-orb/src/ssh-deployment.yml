@@ -170,7 +170,7 @@ commands:
                   -e PVT_KEY_FOR_METERING=${PVT_KEY_FOR_METERING} \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${MAINNET_PORT}:${MAINNET_PORT}" || echo "") \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${TESTNET_PORT}:${TESTNET_PORT}" || echo "") \
-                  $([ "${DOCKER_VOLUME}" = "true" ] && echo "-v ${DOCKER_VOLUME_SRC}:${DOCKER_MOUNT_DST}" || echo "") \
+                  $([ "${DOCKER_VOLUME}" = "true" ] && echo "-v ~/${DOCKER_VOLUME_SRC}:${DOCKER_MOUNT_DST}" || echo "") \
                   -tdi ${DOCKER_IMAGE}:${GIT_USER} \
                   bash -c "git fetch;git checkout ${GIT_BRANCH};git pull;sh buildproto.sh;${SERVICE_RUN_COMMAND}"
             EOF
