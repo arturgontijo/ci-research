@@ -31,13 +31,10 @@ commands:
             export SSH_HOST=<< parameters.ssh-host >>
             export DOCKER_IMAGE_NAME=<< parameters.docker-image >>
             export DOCKER_CONTAINER_NAME=<< parameters.docker-container >>
-            echo 'USER = "${SSH_USER}"'
-            echo 'HOST = "${SSH_HOST}"'
-            echo 'DOCKER_IMAGE_NAME = "${DOCKER_IMAGE_NAME}"'
-            echo 'DOCKER_CONTAINER_NAME = "${DOCKER_CONTAINER_NAME}"'
             echo 'Testing...'
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
               docker version
+              docker ps -a
             EOF
 
 description: |
