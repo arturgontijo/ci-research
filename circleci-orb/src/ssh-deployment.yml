@@ -142,7 +142,7 @@ commands:
             export DOCKER_VOLUME_DST=<< parameters.docker-vol-dst >>
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
-            export SERVICE_RUN_COMMAND=<< parameters.run-command >>
+            export SERVICE_RUN_COMMAND="<< parameters.run-command >>"
             echo        git_user  : ${GIT_USER}
             echo        git_repo  : ${GIT_REPO}
             echo        git_branch: ${GIT_BRANCH}
@@ -188,7 +188,7 @@ commands:
             export DOCKER_CONTAINER=<< parameters.docker-container >>
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
-            export SERVICE_TEST_COMMAND=<< parameters.test-command >>
+            export SERVICE_TEST_COMMAND="<< parameters.test-command >>"
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
               docker exec -i ${PROD_TAG}${DOCKER_CONTAINER} bash -c "${SERVICE_TEST_COMMAND}"
             EOF
