@@ -7,5 +7,21 @@ workflows:
     - ssh-deployment/deploy:
         ssh-host: ${SSH_HOST}
         ssh-user: ${SSH_USER}
+        service-name: "i3d-video-action-recognition"
+        service-dir: "i3d-video-action-recognition"
+        mainnet-port: "7005"
+        testnet-port: "7055"
+        run-command: "python3 run_video_action_recon_service.py --ssl"
+        test-command: "sleep 20;python3 test_video_action_recon_service.py auto"
+        docker-file-url: "https://raw.githubusercontent.com/singnet/dnn-model-services/master/services/i3d-video-action-recognition/Dockerfile"
+        docker-no-cache: true
+        docker-image: "my_i3d_new_ci"
+        docker-container: "MY_I3D_CONTAINER"
+        docker-nvidia: true
+        docker-volume: true
+        docker-vol-src: "~/singnet/.certs"
+        docker-vol-dst: "/opt/singnet/.certs"
+        infura-api-key: ${INFURA_API_KEY}
+        daemon-pk: ${PK_I3D_VIDEO_ACTION_RECON}
 
 version: 2.1
