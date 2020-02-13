@@ -19,7 +19,7 @@ commands:
         type: string
       test-command:
         type: string
-      docker-file-url:
+      docker-file-path:
         type: string
       docker-no-cache:
         type: boolean
@@ -83,10 +83,11 @@ commands:
             export GIT_USER=${CIRCLE_PROJECT_USERNAME}
             export GIT_REPO=<< parameters.git-repo >>
             export GIT_BRANCH=<< parameters.git-branch >>
+            export DOCKER_FILE_PATH=<< parameters.docker-file-path >>
+            export DOCKER_FILE_URL=https://raw.githubusercontent.com/${GIT_USER}/${GIT_REPO}/${GIT_BRANCH}/${DOCKER_FILE_PATH}"
             export DOCKER_NOCACHE=<< parameters.docker-no-cache >>
             export DOCKER_IMAGE=<< parameters.docker-image >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export DOCKER_FILE_URL=<< parameters.docker-file-url >>
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             echo            git_user  : ${GIT_USER}
@@ -243,8 +244,8 @@ jobs:
       test-command:
         description: The service test command.
         type: string
-      docker-file-url:
-        description: The URL of the Dockerfile.
+      docker-file-path:
+        description: The path to the Dockerfile inside the repository.
         type: string
       docker-no-cache:
         description: The build the Docker image without cache.
@@ -291,7 +292,7 @@ jobs:
         testnet-port: << parameters.testnet-port >>
         run-command: << parameters.run-command >>
         test-command: << parameters.test-command >>
-        docker-file-url: << parameters.docker-file-url >>
+        docker-file-path: << parameters.docker-file-path >>
         docker-no-cache: << parameters.docker-no-cache >>
         docker-image: << parameters.docker-image >>
         docker-container: << parameters.docker-container >>
