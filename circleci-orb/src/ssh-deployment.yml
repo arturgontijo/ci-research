@@ -84,7 +84,7 @@ commands:
             export GIT_REPO=<< parameters.git-repo >>
             export GIT_BRANCH=<< parameters.git-branch >>
             export DOCKER_FILE_PATH=<< parameters.docker-file-path >>
-            export DOCKER_FILE_URL=https://raw.githubusercontent.com/${GIT_USER}/${GIT_REPO}/${GIT_BRANCH}/${DOCKER_FILE_PATH}"
+            export DOCKER_FILE_URL=https://raw.githubusercontent.com/${GIT_USER}/${GIT_REPO}/${GIT_BRANCH}/${DOCKER_FILE_PATH}
             export DOCKER_NOCACHE=<< parameters.docker-no-cache >>
             export DOCKER_IMAGE=<< parameters.docker-image >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
