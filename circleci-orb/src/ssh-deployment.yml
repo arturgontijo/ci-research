@@ -1,5 +1,5 @@
 commands:
-  ssh-deployment:
+  deploy:
     description: |
       Deploying...
     parameters:
@@ -15,6 +15,7 @@ commands:
         type: string
       testnet-port:
         type: string
+        default: ""
       run-command:
         type: string
       test-command:
@@ -201,7 +202,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: arturgontijo/ssh-deployment@0.0.1
+        ssh-deployment: arturgontijo/ssh-deployment@1.0.0
       version: 2.1
       workflows:
         deploy_application:
@@ -209,7 +210,12 @@ examples:
           - ssh-deployment/deploy:
               ssh-host: "localhost"
               ssh-user: "ubuntu"
-              extras: "ls -shla"
+              mainnet-port: 7000
+              run-command: "python3 run_service.py"
+              test-command: "python3 test_service.py"
+              docker-file-path: "build/Dockerfile"
+              docker-image: "IMAGE_NAME"
+              docker-container: "CONTAINER_NAME"
 
 jobs:
   deploy:
@@ -283,7 +289,7 @@ jobs:
         default: ""
     steps:
     - checkout
-    - ssh-deployment:
+    - deploy:
         ssh-user: << parameters.ssh-user >>
         ssh-host: << parameters.ssh-host >>
         git-repo: << parameters.git-repo >>
