@@ -6,6 +6,7 @@ jobs:
     docker:
       - image: circleci/python:3.6.6-node
     steps:
+      - checkout
       - ssh-deployment/deploy:
           ssh-host: ${SSH_HOST}
           ssh-user: ${SSH_USER}
@@ -29,6 +30,7 @@ jobs:
     docker:
       - image: circleci/python:3.6.6-node
     steps:
+      - checkout
       - ssh-deployment/deploy:
           ssh-host: ${SSH_HOST}
           ssh-user: ${SSH_USER}
