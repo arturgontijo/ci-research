@@ -9,8 +9,10 @@ commands:
         type: string
       git-repo:
         type: string
+        default: ${CIRCLE_PROJECT_REPONAME}
       git-branch:
         type: string
+        default: ${CIRCLE_BRANCH}
       mainnet-port:
         type: string
       testnet-port:
@@ -24,23 +26,29 @@ commands:
         type: string
       docker-no-cache:
         type: boolean
+        default: true
       docker-image:
         type: string
       docker-container:
         type: string
       docker-nvidia:
         type: boolean
+        default: false
       docker-volume:
         type: boolean
         default: false
       docker-vol-src:
         type: string
+        default: ""
       docker-vol-dst:
         type: string
+        default: ""
       infura-api-key:
         type: string
+        default: ""
       daemon-pk:
         type: string
+        default: ""
     steps:
       - run:
           name: Setting Up
@@ -202,7 +210,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: arturgontijo/ssh-deployment@1.0.0
+        ssh-deployment: arturgontijo/ssh-deployment@1.0.1
       version: 2.1
       workflows:
         deploy_application:
