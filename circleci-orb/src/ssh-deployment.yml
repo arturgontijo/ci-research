@@ -46,6 +46,9 @@ commands:
       infura-api-key:
         type: string
         default: ""
+      daemon-version:
+        type: string
+        default: ""
       daemon-pk:
         type: string
         default: ""
@@ -92,6 +95,7 @@ commands:
             export GIT_USER=${CIRCLE_PROJECT_USERNAME}
             export GIT_REPO=<< parameters.git-repo >>
             export GIT_BRANCH=<< parameters.git-branch >>
+            export SNETD_VERSION=<< parameters.daemon-version >>
             export DOCKER_FILE_PATH=<< parameters.docker-file-path >>
             export DOCKER_FILE_URL=https://raw.githubusercontent.com/${GIT_USER}/${GIT_REPO}/${GIT_BRANCH}/${DOCKER_FILE_PATH}
             export DOCKER_NOCACHE=<< parameters.docker-no-cache >>
@@ -102,6 +106,7 @@ commands:
             echo            git_user  : ${GIT_USER}
             echo            git_repo  : ${GIT_REPO}
             echo            git_branch: ${GIT_BRANCH}
+            echo         snetd_version: ${SNETD_VERSION}
             echo SSH_USER             : ${SSH_USER}
             echo SSH_HOST             : ${SSH_HOST}
             echo DOCKER_NOCACHE       : ${DOCKER_NOCACHE}
@@ -120,6 +125,7 @@ commands:
                   --build-arg git_owner=${GIT_USER} \
                   --build-arg git_repo=${GIT_REPO} \
                   --build-arg git_branch=${GIT_BRANCH} \
+                  $([ "${SNETD_VERSION}" ] && echo "--build-arg snetd_version=${SNETD_VERSION}" || echo "") \
                   $([ "${DOCKER_NOCACHE}" = "true" ] && echo "--no-cache" || echo "") \
                   -t ${DOCKER_IMAGE}:${GIT_USER} ${DOCKER_FILE_URL}
               else
@@ -210,7 +216,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: arturgontijo/ssh-deployment@1.0.1
+        ssh-deployment: arturgontijo/ssh-deployment@1.1.0
       version: 2.1
       workflows:
         deploy_application:
@@ -218,12 +224,14 @@ examples:
           - ssh-deployment/deploy:
               ssh-host: "localhost"
               ssh-user: "ubuntu"
-              mainnet-port: 7000
-              run-command: "python3 run_service.py"
-              test-command: "python3 test_service.py"
-              docker-file-path: "build/Dockerfile"
-              docker-image: "IMAGE_NAME"
-              docker-container: "CONTAINER_NAME"
+              git-repo: "example-service"
+              git-branch: "master"
+              mainnet-port: "7000"
+              run-command: "python3 run_example_service.py"
+              test-command: "python3 test_example_service.py"
+              docker-file-path: "Dockerfile"
+              docker-image: "EXAMPLE_IMAGE_NAME"
+              docker-container: "EXAMPLE_CONTAINER_NAME"
 
 jobs:
   deploy:
@@ -291,6 +299,10 @@ jobs:
         description: The key to access Infura API.
         type: string
         default: ""
+      daemon-version:
+        description: The Daemon version.
+        type: string
+        default: ""
       daemon-pk:
         description: The private key of Daemon post to metering server.
         type: string
@@ -315,6 +327,7 @@ jobs:
         docker-vol-src: << parameters.docker-vol-src >>
         docker-vol-dst: << parameters.docker-vol-dst >>
         infura-api-key: << parameters.infura-api-key >>
+        daemon-version: << parameters.daemon-version >>
         daemon-pk: << parameters.daemon-pk >>
 
 version: 2.1

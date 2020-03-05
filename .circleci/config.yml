@@ -1,5 +1,5 @@
 orbs:
-  ssh-deployment: arturgontijo/ssh-deployment@1.0.1
+  ssh-deployment: arturgontijo/ssh-deployment@1.1.0
 
 jobs:
   cntk-image-recon:
@@ -25,6 +25,7 @@ jobs:
           docker-vol-src: "singnet/.certs"
           docker-vol-dst: "/opt/singnet/.certs"
           infura-api-key: ${INFURA_API_KEY}
+          daemon-version: ${CI_SNETD_VERSION}
           daemon-pk: ${PK_CNTK_IMAGE_RECON}
   i3d-video-action-recognition:
     docker:
@@ -49,6 +50,7 @@ jobs:
           docker-vol-src: "singnet/.certs"
           docker-vol-dst: "/opt/singnet/.certs"
           infura-api-key: ${INFURA_API_KEY}
+          daemon-version: ${CI_SNETD_VERSION}
           daemon-pk: ${PK_I3D_VIDEO_ACTION_RECON}
 
 workflows:
