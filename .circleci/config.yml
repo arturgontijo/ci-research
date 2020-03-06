@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  ssh-deployment: singularitynet/ssh-deployment@1.1.4
+  ssh-deployment: singularitynet/ssh-deployment@1.1.5
 
 jobs:
   cntk-image-recon:
@@ -14,10 +14,12 @@ jobs:
           ssh-user: ${SSH_USER}
           git-repo: "dnn-model-services"
           git-branch: "master"
+          service-dir: "services/cntk-image-recon"
           mainnet-port: "7004"
           testnet-port: "7054"
           run-command: "source '/cntk/activate-cntk';python3 run_image_recon_service.py --ssl"
           test-command: "sleep 20;source '/cntk/activate-cntk';python3 test_image_recon_service.py auto"
+          docker-test-files: "Dockerfile, requirements.txt"
           docker-file-path: "services/cntk-image-recon/Dockerfile"
           docker-no-cache: true
           docker-image: "my_cntk_new_ci"
@@ -37,10 +39,12 @@ jobs:
           ssh-user: ${SSH_USER}
           git-repo: "dnn-model-services"
           git-branch: "master"
+          service-dir: "services/i3d-video-action-recognition"
           mainnet-port: "7005"
           testnet-port: "7055"
           run-command: "python3 run_video_action_recon_service.py --ssl"
           test-command: "sleep 20;python3 test_video_action_recon_service.py auto"
+          docker-test-files: "Dockerfile, requirements.txt"
           docker-file-path: "services/i3d-video-action-recognition/Dockerfile"
           docker-no-cache: true
           docker-image: "my_i3d_new_ci"

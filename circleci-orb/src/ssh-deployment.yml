@@ -15,6 +15,9 @@ commands:
       git-branch:
         type: string
         default: ${CIRCLE_BRANCH}
+      service-dir:
+        type: string
+        default: "."
       mainnet-port:
         type: string
       testnet-port:
@@ -24,6 +27,9 @@ commands:
         type: string
       test-command:
         type: string
+      docker-test-files:
+        type: string
+        default: ""
       docker-file-path:
         type: string
       docker-no-cache:
@@ -60,8 +66,10 @@ commands:
             export DOCKER_CONTAINER=<< parameters.docker-container >>
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
+            export SERVICE_DIR=<< parameters.service-dir >>
             echo "Setting Up..."
-            echo $(.circleci/check_md5.sh) >> docker_rebuild
+            cd $SERVICE_DIR
+            echo $(.circleci/check_md5.sh <<parameters.docker-test-files>>) >> docker_rebuild
             echo "FILES_CHANGED=$(cat docker_rebuild)"
 
       - run:
@@ -208,7 +216,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: singularitynet/ssh-deployment@1.1.4
+        ssh-deployment: singularitynet/ssh-deployment@1.1.5
       version: 2.1
       workflows:
         deploy_application:
@@ -221,6 +229,7 @@ examples:
               mainnet-port: "7000"
               run-command: "python3 run_example_service.py"
               test-command: "python3 test_example_service.py"
+              docker-test-files: "Dockerfile, requirements.txt"
               docker-file-path: "Dockerfile"
               docker-image: "EXAMPLE_IMAGE_NAME"
               docker-container: "EXAMPLE_CONTAINER_NAME"
@@ -245,6 +254,10 @@ jobs:
         description: The Github branch name.
         type: string
         default: ${CIRCLE_BRANCH}
+      service-dir:
+        description: The service directory.
+        type: string
+        default: "."
       mainnet-port:
         description: The service post (Mainnet).
         type: string
@@ -258,6 +271,10 @@ jobs:
       test-command:
         description: The service test command.
         type: string
+      docker-test-files:
+        description: The path(s) of files that will be tested before build the Docker image.
+        type: string
+        default: ""
       docker-file-path:
         description: The path to the Dockerfile inside the repository.
         type: string
@@ -298,10 +315,12 @@ jobs:
         ssh-host: << parameters.ssh-host >>
         git-repo: << parameters.git-repo >>
         git-branch: << parameters.git-branch >>
+        service-dir: << parameters.service-dir >>
         mainnet-port: << parameters.mainnet-port >>
         testnet-port: << parameters.testnet-port >>
         run-command: << parameters.run-command >>
         test-command: << parameters.test-command >>
+        docker-test-files: << parameters.docker-test-files >>
         docker-file-path: << parameters.docker-file-path >>
         docker-no-cache: << parameters.docker-no-cache >>
         docker-image: << parameters.docker-image >>
