@@ -145,7 +145,7 @@ commands:
             export DOCKER_CONTAINER=<< parameters.docker-container >>
             export MAINNET_PORT=<< parameters.mainnet-port >>
             export TESTNET_PORT=<< parameters.testnet-port >>
-            export DOCKER_VOLUMES=<< parameters.docker-volumes >>
+            export DOCKER_VOLUMES="<< parameters.docker-volumes >>"
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             export SERVICE_RUN_COMMAND="<< parameters.run-command >>"
@@ -208,7 +208,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: singularitynet/ssh-deployment@1.1.0
+        ssh-deployment: singularitynet/ssh-deployment@1.1.2
       version: 2.1
       workflows:
         deploy_application:
@@ -276,7 +276,7 @@ jobs:
         type: boolean
         default: false
       docker-volumes:
-        description: Starts the container with volume map (-v).
+        description: Starts the container with volumes mapping (-v).
         type: string
         default: ""
       infura-api-key:
