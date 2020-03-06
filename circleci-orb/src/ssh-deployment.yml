@@ -174,7 +174,7 @@ commands:
                   -e PVT_KEY_FOR_METERING=${PVT_KEY_FOR_METERING} \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${MAINNET_PORT}:${MAINNET_PORT}" || echo "") \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${TESTNET_PORT}:${TESTNET_PORT}" || echo "") \
-                  "${DOCKER_VOLUMES}" \
+                  ${DOCKER_VOLUMES} \
                   -tdi ${DOCKER_IMAGE}:${GIT_USER} \
                   bash -c "git fetch;git checkout ${GIT_BRANCH};git pull;sh buildproto.sh;${SERVICE_RUN_COMMAND}"
             EOF
@@ -208,7 +208,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: singularitynet/ssh-deployment@1.1.2
+        ssh-deployment: singularitynet/ssh-deployment@1.1.3
       version: 2.1
       workflows:
         deploy_application:
