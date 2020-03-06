@@ -1,5 +1,7 @@
+version: 2.1
+
 orbs:
-  ssh-deployment: singularitynet/ssh-deployment@1.0.0
+  ssh-deployment: singularitynet/ssh-deployment@1.1.0
 
 jobs:
   cntk-image-recon:
@@ -21,9 +23,7 @@ jobs:
           docker-image: "my_cntk_new_ci"
           docker-container: "MY_CNTK_CONTAINER"
           docker-nvidia: true
-          docker-volume: true
-          docker-vol-src: "singnet/.certs"
-          docker-vol-dst: "/opt/singnet/.certs"
+          docker-volumes: "-v ~/singnet/.certs:/opt/singnet/.certs"
           infura-api-key: ${INFURA_API_KEY}
           daemon-version: ${CI_SNETD_VERSION}
           daemon-pk: ${PK_CNTK_IMAGE_RECON}
@@ -46,9 +46,7 @@ jobs:
           docker-image: "my_i3d_new_ci"
           docker-container: "MY_I3D_CONTAINER"
           docker-nvidia: true
-          docker-volume: true
-          docker-vol-src: "singnet/.certs"
-          docker-vol-dst: "/opt/singnet/.certs"
+          docker-volumes: "-v ~/singnet/.certs:/opt/singnet/.certs"
           infura-api-key: ${INFURA_API_KEY}
           daemon-version: ${CI_SNETD_VERSION}
           daemon-pk: ${PK_I3D_VIDEO_ACTION_RECON}
@@ -58,5 +56,3 @@ workflows:
     jobs:
       - cntk-image-recon
       - i3d-video-action-recognition
-
-version: 2.1

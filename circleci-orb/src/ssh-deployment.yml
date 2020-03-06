@@ -1,3 +1,5 @@
+version: 2.1
+
 commands:
   deploy:
     description: |
@@ -34,13 +36,7 @@ commands:
       docker-nvidia:
         type: boolean
         default: false
-      docker-volume:
-        type: boolean
-        default: false
-      docker-vol-src:
-        type: string
-        default: ""
-      docker-vol-dst:
+      docker-volumes:
         type: string
         default: ""
       infura-api-key:
@@ -149,9 +145,7 @@ commands:
             export DOCKER_CONTAINER=<< parameters.docker-container >>
             export MAINNET_PORT=<< parameters.mainnet-port >>
             export TESTNET_PORT=<< parameters.testnet-port >>
-            export DOCKER_VOLUME=<< parameters.docker-volume >>
-            export DOCKER_VOLUME_SRC=<< parameters.docker-vol-src >>
-            export DOCKER_VOLUME_DST=<< parameters.docker-vol-dst >>
+            export DOCKER_VOLUMES=<< parameters.docker-volumes >>
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             export SERVICE_RUN_COMMAND="<< parameters.run-command >>"
@@ -166,9 +160,7 @@ commands:
             echo DOCKER_CONTAINER : ${DOCKER_CONTAINER}
             echo MAINNET_PORT     : ${MAINNET_PORT}
             echo TESTNET_PORT     : ${TESTNET_PORT}
-            echo DOCKER_VOLUME    : ${DOCKER_VOLUME}
-            echo DOCKER_VOLUME_SRC: ${DOCKER_VOLUME_SRC}
-            echo DOCKER_VOLUME_DST: ${DOCKER_VOLUME_DST}
+            echo DOCKER_VOLUMES   : ${DOCKER_VOLUMES}
             echo "====================================================================================================="
             echo "Running new Container..."
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<-EOF
@@ -182,7 +174,7 @@ commands:
                   -e PVT_KEY_FOR_METERING=${PVT_KEY_FOR_METERING} \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${MAINNET_PORT}:${MAINNET_PORT}" || echo "") \
                   $([ "${DOCKER_DEPLOY}" = "true" ] && echo "-p ${TESTNET_PORT}:${TESTNET_PORT}" || echo "") \
-                  $([ "${DOCKER_VOLUME}" = "true" ] && echo "-v ~/${DOCKER_VOLUME_SRC}:${DOCKER_VOLUME_DST}" || echo "") \
+                  "${DOCKER_VOLUMES}" \
                   -tdi ${DOCKER_IMAGE}:${GIT_USER} \
                   bash -c "git fetch;git checkout ${GIT_BRANCH};git pull;sh buildproto.sh;${SERVICE_RUN_COMMAND}"
             EOF
@@ -216,7 +208,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: singularitynet/ssh-deployment@1.0.0
+        ssh-deployment: singularitynet/ssh-deployment@1.1.0
       version: 2.1
       workflows:
         deploy_application:
@@ -283,16 +275,8 @@ jobs:
         description: Starts the container with "--runtime=nvidia".
         type: boolean
         default: false
-      docker-volume:
+      docker-volumes:
         description: Starts the container with volume map (-v).
-        type: boolean
-        default: false
-      docker-vol-src:
-        description: Source directory outside the container.
-        type: string
-        default: ""
-      docker-vol-dst:
-        description: Destination directory inside the container.
         type: string
         default: ""
       infura-api-key:
@@ -323,11 +307,7 @@ jobs:
         docker-image: << parameters.docker-image >>
         docker-container: << parameters.docker-container >>
         docker-nvidia: << parameters.docker-nvidia >>
-        docker-volume: << parameters.docker-volume >>
-        docker-vol-src: << parameters.docker-vol-src >>
-        docker-vol-dst: << parameters.docker-vol-dst >>
+        docker-volumes: << parameters.docker-volumes >>
         infura-api-key: << parameters.infura-api-key >>
         daemon-version: << parameters.daemon-version >>
         daemon-pk: << parameters.daemon-pk >>
-
-version: 2.1
