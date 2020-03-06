@@ -67,8 +67,9 @@ commands:
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             export SERVICE_DIR=<< parameters.service-dir >>
+            export FILES_LIST="<<parameters.docker-test-files>>"
             echo "Setting Up..."
-            echo $(.circleci/check_md5.sh <<parameters.docker-test-files>>) >> docker_rebuild
+            echo $(.circleci/check_md5.sh "${FILES_LIST}") >> docker_rebuild
             echo "FILES_CHANGED=$(cat docker_rebuild)"
 
       - run:
@@ -215,7 +216,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: singularitynet/ssh-deployment@1.1.6
+        ssh-deployment: singularitynet/ssh-deployment@1.1.7
       version: 2.1
       workflows:
         deploy_application:
