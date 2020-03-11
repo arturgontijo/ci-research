@@ -60,7 +60,7 @@ commands:
         steps:
             - run:
                   name: Setting Up
-                  command: |
+                  command: |-
                       export SSH_USER=<< parameters.ssh-user >>
                       export SSH_HOST=<< parameters.ssh-host >>
                       export GIT_USER=<< parameters.git-user >>
@@ -82,7 +82,7 @@ commands:
 
             - run:
                   name: Removing old Docker Container (Previous Builds)
-                  command: |
+                  command: |-
                       export SSH_USER=<< parameters.ssh-user >>
                       export SSH_HOST=<< parameters.ssh-host >>
                       export GIT_USER=<< parameters.git-user >>
@@ -99,7 +99,7 @@ commands:
 
             - run:
                   name: Building
-                  command: |
+                  command: |-
                       echo "=========================================== Build Configs ==========================================="
                       export SSH_USER=<< parameters.ssh-user >>
                       export SSH_HOST=<< parameters.ssh-host >>
@@ -146,7 +146,7 @@ commands:
 
             - run:
                   name: Running new Docker Container
-                  command: |
+                  command: |-
                       echo "============================================ Run Configs ============================================"
                       export SSH_USER=<< parameters.ssh-user >>
                       export SSH_HOST=<< parameters.ssh-host >>
@@ -196,7 +196,7 @@ commands:
 
             - run:
                   name: Checking SNET Daemon version
-                  command: |
+                  command: |-
                       echo "========================================= Daemon Version ============================================"
                       export SSH_USER=<< parameters.ssh-user >>
                       export SSH_HOST=<< parameters.ssh-host >>
@@ -223,7 +223,7 @@ commands:
             - run:
                 name: Testing local
                 no_output_timeout: 60m
-                command: |
+                command: |-
                     export SSH_USER=<< parameters.ssh-user >>
                     export SSH_HOST=<< parameters.ssh-host >>
                     export DOCKER_CONTAINER=<< parameters.docker-container >>
