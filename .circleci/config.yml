@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  ssh-deployment: arturgontijo/ssh-deployment@1.1.10
+  ssh-deployment: arturgontijo/ssh-deployment@1.1.11
 
 jobs:
   cntk-image-recon:

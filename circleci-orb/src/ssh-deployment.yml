@@ -67,7 +67,7 @@ commands:
             export GIT_REPO=<< parameters.git-repo >>
             export GIT_BRANCH=<< parameters.git-branch >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             export SERVICE_DIR=<< parameters.service-dir >>
             export FILES_LIST="<<parameters.docker-test-files>>"
@@ -85,8 +85,11 @@ commands:
           command: |
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
+            export GIT_USER=<< parameters.git-user >>
+            export GIT_REPO=<< parameters.git-repo >>
+            export GIT_BRANCH=<< parameters.git-branch >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             echo "Removing old Container (from previous builds)..."
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
@@ -109,7 +112,7 @@ commands:
             export DOCKER_NOCACHE=<< parameters.docker-no-cache >>
             export DOCKER_IMAGE=<< parameters.docker-image >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             echo            git_user  : ${GIT_USER}
             echo            git_repo  : ${GIT_REPO}
@@ -122,7 +125,7 @@ commands:
             echo DOCKER_CONTAINER     : ${DOCKER_CONTAINER}
             echo DOCKER_FILE_URL      : ${DOCKER_FILE_URL}
             echo "====================================================================================================="
-            DOCKER_IMAGE_EXISTS=`ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} docker images -q ${DOCKER_IMAGE}:${GIT_USER}`
+            DOCKER_IMAGE_EXISTS=`ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} docker images -q ${DOCKER_IMAGE}:${CIRCLE_PROJECT_USERNAME}`
             FILES_CHANGED=`cat /tmp/docker_rebuild`
             echo DOCKER_IMAGE_EXISTS=${DOCKER_IMAGE_EXISTS}
             echo FILES_CHANGED=${FILES_CHANGED}
@@ -148,7 +151,7 @@ commands:
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             export SNETD_VERSION=<< parameters.daemon-version >>
             echo SSH_USER        : ${SSH_USER}
@@ -176,7 +179,7 @@ commands:
             export MAINNET_PORT=<< parameters.mainnet-port >>
             export TESTNET_PORT=<< parameters.testnet-port >>
             export DOCKER_VOLUMES="<< parameters.docker-volumes >>"
-            export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             export SERVICE_RUN_COMMAND="<< parameters.run-command >>"
             echo        git_user  : ${GIT_USER}
@@ -216,7 +219,7 @@ commands:
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
             export SERVICE_TEST_COMMAND="<< parameters.test-command >>"
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
