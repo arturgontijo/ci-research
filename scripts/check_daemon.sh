@@ -13,7 +13,7 @@ if [ "${SNETD_VERSION}" != "" ]; then
 			tar -xvf snet-daemon-"${SNETD_VERSION}"-linux-amd64.tar.gz
 			docker cp snet-daemon-"${SNETD_VERSION}"-linux-amd64/snetd "${PROD_TAG}""${DOCKER_CONTAINER}":/usr/bin || echo true
 			rm -rf snet-daemon-*
-		EOF
+EOF
 	fi
 fi
 
