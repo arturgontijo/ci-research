@@ -75,7 +75,7 @@ commands:
             git clone https://github.com/arturgontijo/ci-research.git /tmp/ci-research
             if [ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_PROJECT_REPONAME}"/"${CIRCLE_BRANCH}" != "${GIT_USER}"/"${GIT_REPO}"/"${GIT_BRANCH}" ]; then
               git clone -b "${GIT_BRANCH}" https://github.com/"${GIT_USER}"/"${GIT_REPO}".git /tmp/"${GIT_REPO}"
-              cd /tmp/"${GIT_REPO}"
+              export SERVICE_DIR=/tmp/"${GIT_REPO}"/"${SERVICE_DIR}"
             fi
             echo $(/tmp/ci-research/scripts/check_md5.sh "${FILES_LIST}") >> /tmp/docker_rebuild
             echo "FILES_CHANGED=$(cat /tmp/docker_rebuild)"
