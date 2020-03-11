@@ -213,7 +213,9 @@ commands:
             RESTART_CONTAINER=$(/tmp/ci-research/scripts/check_daemon.sh "${SNETD_VERSION}")
             if [ "RESTART_CONTAINER" != 0 ]; then
               echo "SNET Daemon updated, restarting the container..."
-              docker restart ${PROD_TAG}${DOCKER_CONTAINER}
+              ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
+                docker restart ${PROD_TAG}${DOCKER_CONTAINER}
+              EOF
             else
               echo "Not updating..."
             fi
