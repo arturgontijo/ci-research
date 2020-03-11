@@ -214,6 +214,8 @@ commands:
             if [ "RESTART_CONTAINER" = 1 ]; then
               echo "SNET Daemon updated, restarting the container..."
               docker restart ${PROD_TAG}${DOCKER_CONTAINER}
+            else
+              echo "Not updating..."
             fi
 
       - run:

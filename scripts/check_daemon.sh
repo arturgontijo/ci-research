@@ -19,8 +19,6 @@ if [ "${SNETD_VERSION}" != "" ]
 			rm -rf snet-daemon-*
 		EOF
 		RET_VAL=1
-	else
-		echo "SNET Daemon version is OK."
 	fi
 fi
 
