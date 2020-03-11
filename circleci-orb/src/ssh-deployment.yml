@@ -145,24 +145,6 @@ commands:
             EOF
 
       - run:
-          name: Checking SNET Daemon version
-          command: |
-            echo "========================================= Daemon Version ============================================"
-            export SSH_USER=<< parameters.ssh-user >>
-            export SSH_HOST=<< parameters.ssh-host >>
-            export DOCKER_CONTAINER=<< parameters.docker-container >>
-            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
-            export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
-            export SNETD_VERSION=<< parameters.daemon-version >>
-            echo SSH_USER        : ${SSH_USER}
-            echo SSH_HOST        : ${SSH_HOST}
-            echo DOCKER_CONTAINER: ${PROD_TAG}${DOCKER_CONTAINER}
-            echo SNETD_VERSION   : ${SNETD_VERSION}
-            echo "====================================================================================================="
-            echo "Checking SNET Daemon version..."
-            /tmp/ci-research/scripts/check_daemon.sh "${SNETD_VERSION}"
-
-      - run:
           name: Running new Docker Container
           command: |
             echo "============================================ Run Configs ============================================"
@@ -211,6 +193,28 @@ commands:
                   -tdi ${DOCKER_IMAGE}:${GIT_USER} \
                   bash -c "git fetch;git checkout ${GIT_BRANCH};git pull;sh buildproto.sh;${SERVICE_RUN_COMMAND}"
             EOF
+
+      - run:
+          name: Checking SNET Daemon version
+          command: |
+            echo "========================================= Daemon Version ============================================"
+            export SSH_USER=<< parameters.ssh-user >>
+            export SSH_HOST=<< parameters.ssh-host >>
+            export DOCKER_CONTAINER=<< parameters.docker-container >>
+            export DOCKER_DEPLOY=$([ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
+            export SNETD_VERSION=<< parameters.daemon-version >>
+            echo SSH_USER        : ${SSH_USER}
+            echo SSH_HOST        : ${SSH_HOST}
+            echo DOCKER_CONTAINER: ${PROD_TAG}${DOCKER_CONTAINER}
+            echo SNETD_VERSION   : ${SNETD_VERSION}
+            echo "====================================================================================================="
+            echo "Checking SNET Daemon version..."
+            RESTART_CONTAINER=$(/tmp/ci-research/scripts/check_daemon.sh "${SNETD_VERSION}")
+            if [ "RESTART_CONTAINER" = 1 ]; then
+              echo "SNET Daemon updated, restarting the container..."
+              docker restart ${PROD_TAG}${DOCKER_CONTAINER}
+            fi
 
       - run:
           name: Testing local
