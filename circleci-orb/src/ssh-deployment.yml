@@ -9,6 +9,9 @@ commands:
         type: string
       ssh-host:
         type: string
+      git-user:
+        type: string
+        default: ${CIRCLE_PROJECT_USERNAME}
       git-repo:
         type: string
         default: ${CIRCLE_PROJECT_REPONAME}
@@ -60,7 +63,7 @@ commands:
           command: |
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
-            export GIT_USER=${CIRCLE_PROJECT_USERNAME}
+            export GIT_USER=<< parameters.git-user >>
             export GIT_REPO=<< parameters.git-repo >>
             export GIT_BRANCH=<< parameters.git-branch >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
@@ -69,18 +72,19 @@ commands:
             export SERVICE_DIR=<< parameters.service-dir >>
             export FILES_LIST="<<parameters.docker-test-files>>"
             echo "Setting Up..."
-            echo $(.circleci/check_md5.sh "${FILES_LIST}") >> docker_rebuild
-            echo "FILES_CHANGED=$(cat docker_rebuild)"
+            git clone https://github.com/arturgontijo/ci-research.git /tmp/ci-research
+            if [ "${CIRCLE_PROJECT_USERNAME}"/"${CIRCLE_PROJECT_REPONAME}"/"${CIRCLE_BRANCH}" != "${GIT_USER}"/"${GIT_REPO}"/"${GIT_BRANCH}" ]; then
+              git clone -b "${GIT_BRANCH}" https://github.com/"${GIT_USER}"/"${GIT_REPO}".git /tmp/"${GIT_REPO}"
+              cd /tmp/"${GIT_REPO}"
+            fi
+            echo $(/tmp/ci-research/scripts/check_md5.sh "${FILES_LIST}") >> /tmp/docker_rebuild
+            echo "FILES_CHANGED=$(cat /tmp/docker_rebuild)"
 
       - run:
           name: Removing old Docker Container (Previous Builds)
           command: |
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
-            export GIT_USER=${CIRCLE_PROJECT_USERNAME}
-            export GIT_REPO=<< parameters.git-repo >>
-            export GIT_BRANCH=<< parameters.git-branch >>
-            export DOCKER_IMAGE=<< parameters.docker-image >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
@@ -96,7 +100,7 @@ commands:
             echo "=========================================== Build Configs ==========================================="
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
-            export GIT_USER=${CIRCLE_PROJECT_USERNAME}
+            export GIT_USER=<< parameters.git-user >>
             export GIT_REPO=<< parameters.git-repo >>
             export GIT_BRANCH=<< parameters.git-branch >>
             export SNETD_VERSION=<< parameters.daemon-version >>
@@ -110,16 +114,16 @@ commands:
             echo            git_user  : ${GIT_USER}
             echo            git_repo  : ${GIT_REPO}
             echo            git_branch: ${GIT_BRANCH}
-            echo         snetd_version: ${SNETD_VERSION}
             echo SSH_USER             : ${SSH_USER}
             echo SSH_HOST             : ${SSH_HOST}
+            echo SNETD_VERSION        : ${SNETD_VERSION}
             echo DOCKER_NOCACHE       : ${DOCKER_NOCACHE}
             echo DOCKER_IMAGE         : ${DOCKER_IMAGE}
             echo DOCKER_CONTAINER     : ${DOCKER_CONTAINER}
             echo DOCKER_FILE_URL      : ${DOCKER_FILE_URL}
             echo "====================================================================================================="
             DOCKER_IMAGE_EXISTS=`ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} docker images -q ${DOCKER_IMAGE}:${GIT_USER}`
-            FILES_CHANGED=`cat docker_rebuild`
+            FILES_CHANGED=`cat /tmp/docker_rebuild`
             echo DOCKER_IMAGE_EXISTS=${DOCKER_IMAGE_EXISTS}
             echo FILES_CHANGED=${FILES_CHANGED}
             ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<< EOF
@@ -138,12 +142,30 @@ commands:
             EOF
 
       - run:
+          name: Checking SNET Daemon version
+          command: |
+            echo "========================================= Daemon Version ============================================"
+            export SSH_USER=<< parameters.ssh-user >>
+            export SSH_HOST=<< parameters.ssh-host >>
+            export DOCKER_CONTAINER=<< parameters.docker-container >>
+            export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
+            export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
+            export SNETD_VERSION=<< parameters.daemon-version >>
+            echo SSH_USER        : ${SSH_USER}
+            echo SSH_HOST        : ${SSH_HOST}
+            echo DOCKER_CONTAINER: ${PROD_TAG}${DOCKER_CONTAINER}
+            echo SNETD_VERSION   : ${SNETD_VERSION}
+            echo "====================================================================================================="
+            echo "Checking SNET Daemon version..."
+            /tmp/ci-research/check_daemon.sh "${SNETD_VERSION}"
+
+      - run:
           name: Running new Docker Container
           command: |
             echo "============================================ Run Configs ============================================"
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
-            export GIT_USER=${CIRCLE_PROJECT_USERNAME}
+            export GIT_USER=<< parameters.git-user >>
             export GIT_REPO=<< parameters.git-repo >>
             export GIT_BRANCH=<< parameters.git-branch >>
             export INFURA_API_KEY=<< parameters.infura-api-key >>
@@ -193,10 +215,6 @@ commands:
           command: |
             export SSH_USER=<< parameters.ssh-user >>
             export SSH_HOST=<< parameters.ssh-host >>
-            export GIT_USER=${CIRCLE_PROJECT_USERNAME}
-            export GIT_REPO=<< parameters.git-repo >>
-            export GIT_BRANCH=<< parameters.git-branch >>
-            export DOCKER_IMAGE=<< parameters.docker-image >>
             export DOCKER_CONTAINER=<< parameters.docker-container >>
             export DOCKER_DEPLOY=$([ "${GIT_USER}"/"${GIT_BRANCH}" = "singnet/master" ] && echo "true" || echo "false")
             export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
@@ -216,7 +234,7 @@ examples:
       Example of using the orb.
     usage:
       orbs:
-        ssh-deployment: singularitynet/ssh-deployment@1.1.7
+        ssh-deployment: singularitynet/ssh-deployment@1.1.8
       version: 2.1
       workflows:
         deploy_application:
@@ -246,6 +264,10 @@ jobs:
       ssh-host:
         description: The remote SSH host.
         type: string
+      git-user:
+        description: The Github user name.
+        type: string
+        default: ${CIRCLE_PROJECT_USERNAME}
       git-repo:
         description: The Github repository name.
         type: string
@@ -313,6 +335,7 @@ jobs:
     - deploy:
         ssh-user: << parameters.ssh-user >>
         ssh-host: << parameters.ssh-host >>
+        git-user: << parameters.git-user >>
         git-repo: << parameters.git-repo >>
         git-branch: << parameters.git-branch >>
         service-dir: << parameters.service-dir >>

@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  ssh-deployment: singularitynet/ssh-deployment@1.1.7
+  ssh-deployment: arturgontijo/ssh-deployment@1.1.8
 
 jobs:
   cntk-image-recon:
@@ -12,8 +12,10 @@ jobs:
       - ssh-deployment/deploy:
           ssh-host: ${SSH_HOST}
           ssh-user: ${SSH_USER}
+          git-user: "singnet"
           git-repo: "dnn-model-services"
           git-branch: "master"
+          service-dir: "cntk-image-recon"
           mainnet-port: "7004"
           testnet-port: "7054"
           run-command: "source '/cntk/activate-cntk';python3 run_image_recon_service.py --ssl"
@@ -35,8 +37,10 @@ jobs:
       - ssh-deployment/deploy:
           ssh-host: ${SSH_HOST}
           ssh-user: ${SSH_USER}
+          git-user: "singnet"
           git-repo: "dnn-model-services"
           git-branch: "master"
+          service-dir: "i3d-video-action-recognition"
           mainnet-port: "7005"
           testnet-port: "7055"
           run-command: "python3 run_video_action_recon_service.py --ssl"
