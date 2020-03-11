@@ -212,12 +212,12 @@ commands:
                       echo "Checking SNET Daemon version..."
                       RESTART_CONTAINER=$(/tmp/ci-research/scripts/check_daemon.sh "${SNETD_VERSION}")
                       if [ "RESTART_CONTAINER" != 0 ]; then
-                            echo "SNET Daemon updated, restarting the container..."
-                            ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<- EOF
-                                docker restart ${PROD_TAG}${DOCKER_CONTAINER}
-                            EOF
+                        echo "SNET Daemon updated, restarting the container..."
+                        ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<- EOF
+                          docker restart ${PROD_TAG}${DOCKER_CONTAINER}
+                        EOF
                       else
-                            echo "Not updating..."
+                        echo "Not updating..."
                       fi
 
             - run:
@@ -231,7 +231,7 @@ commands:
                     export PROD_TAG=$([ "${DOCKER_DEPLOY}" = "true" ] && echo "PROD_" || echo "")
                     export SERVICE_TEST_COMMAND="<< parameters.test-command >>"
                     ssh -o "StrictHostKeyChecking no" ${SSH_USER}@${SSH_HOST} \<<- EOF
-                        docker exec -i ${PROD_TAG}${DOCKER_CONTAINER} bash -c "${SERVICE_TEST_COMMAND}"
+                      docker exec -i ${PROD_TAG}${DOCKER_CONTAINER} bash -c "${SERVICE_TEST_COMMAND}"
                     EOF
 
 description: |
