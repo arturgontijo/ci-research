@@ -22,4 +22,4 @@ if [ "${SNETD_VERSION}" != "" ]
 	fi
 fi
 
-echo ${RET_VAL}
+return ${RET_VAL}

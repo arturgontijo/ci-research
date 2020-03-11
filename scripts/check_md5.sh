@@ -27,4 +27,4 @@ do
   fi
 done
 
-echo ${RET_VAL}
+return ${RET_VAL}
