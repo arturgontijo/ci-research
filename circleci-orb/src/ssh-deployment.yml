@@ -138,7 +138,7 @@ commands:
                   --build-arg git_branch=${GIT_BRANCH} \
                   $([ "${SNETD_VERSION}" ] && echo "--build-arg snetd_version=${SNETD_VERSION}" || echo "") \
                   $([ "${DOCKER_NOCACHE}" = "true" ] && echo "--no-cache" || echo "") \
-                  -t ${DOCKER_IMAGE}:${GIT_USER} ${DOCKER_FILE_URL}
+                  -t ${DOCKER_IMAGE}:${CIRCLE_PROJECT_USERNAME} ${DOCKER_FILE_URL}
               else
                 echo "Not Building..."
               fi
