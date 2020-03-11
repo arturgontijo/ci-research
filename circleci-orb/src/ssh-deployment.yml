@@ -157,7 +157,7 @@ commands:
             echo SNETD_VERSION   : ${SNETD_VERSION}
             echo "====================================================================================================="
             echo "Checking SNET Daemon version..."
-            /tmp/ci-research/check_daemon.sh "${SNETD_VERSION}"
+            /tmp/ci-research/scripts/check_daemon.sh "${SNETD_VERSION}"
 
       - run:
           name: Running new Docker Container
